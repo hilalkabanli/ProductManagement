@@ -10,7 +10,7 @@ namespace ProductManagement.Model
 {
     public class Product
     {
-
+        // it is required to have a product id and it should be between 1 and 10000
         [Required]
         [Range(minimum: 1, maximum: 10000)]
         [DisplayName("Product Id")]
@@ -38,13 +38,14 @@ namespace ProductManagement.Model
         public Category Category { get; set; }
     }
 
-    public enum Category{
+    // enum for category
+    public enum Category
+    {
         Electronics = 0,
         Clothing = 1,
         Food = 2,
         Furniture = 3,
-
         Other = 4,
-        
+
     }
 }

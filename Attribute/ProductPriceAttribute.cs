@@ -14,8 +14,10 @@ namespace ProductManagement.Attribute
 
         }
 
+        // custom validation for price
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
+            // get the model and check the price
             var model = (Product)validationContext.ObjectInstance;
             ValidationResult result = ValidationResult.Success;
             var price = (int)value;
