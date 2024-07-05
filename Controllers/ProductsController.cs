@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-using ProductManagement.Base;
+using ProductManagement;
 using ProductManagement.Model;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace ProductManagement.Controllers{
     [ApiController]
@@ -63,6 +64,33 @@ namespace ProductManagement.Controllers{
             list.Remove(item);
 
             return new ApiResponse<List<Product>>(list);
-    }}
+    }
+       
+     [HttpPatch("{id}")]
+        public ApiResponse<Product> Patch(int id, [FromBody] JsonPatchDocument<Product> patchDoc){
+            if (patchDoc == null)
+            {
+                return new ApiResponse<Product>("Invalid patch document.");
+            }
+
+            var item = list.FirstOrDefault(x => x.Id == id);
+            if (item is null)
+            {
+                return new ApiResponse<Product>("Item not found in system.");
+            }
+
+            patchDoc.ApplyTo(item, (error) => 
+            {
+                ModelState.TryAddModelError(error.AffectedObject.ToString(), error.ErrorMessage);
+            });
+
+            if (!ModelState.IsValid)
+            {
+                return new ApiResponse<Product>("Invalid model state.");
+            }
+
+            return new ApiResponse<Product>(item);
+        }
+    }
 
 }
