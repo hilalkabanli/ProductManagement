@@ -72,30 +72,20 @@ namespace ProductManagement.Controllers{
     }
        
         [HttpPatch("{id}")]
-        public ApiResponse<Product> Patch(int id, [FromBody] JsonPatchDocument<Product> patchDoc){
-            if (patchDoc == null)
-            {
-                return new ApiResponse<Product>("Invalid patch document.");
-            }
-
+        public async Task<ApiResponse<List<Product>>> Patch(int id, [FromBody] Product product){
             var item = list.FirstOrDefault(x => x.Id == id);
             if (item is null)
             {
-                return new ApiResponse<Product>("Item not found in system.");
+                return new ApiResponse<List<Product>>("Item not found in system.");
             }
 
-            patchDoc.ApplyTo(item, (error) => 
-            {
-                ModelState.TryAddModelError(error.AffectedObject.ToString(), error.ErrorMessage);
-            });
+            var index = list.IndexOf(item);
+            list[index] = product;
 
-            if (!ModelState.IsValid)
-            {
-                return new ApiResponse<Product>("Invalid model state.");
-            }
+            return new ApiResponse<List<Product>>(list);
 
-            return new ApiResponse<Product>(item);
         }
+        
 
             [HttpGet("list")]
         public ApiResponse<List<Product>> GetFilteredProducts([FromQuery] string name, [FromQuery] string category, [FromQuery] string sortBy)
